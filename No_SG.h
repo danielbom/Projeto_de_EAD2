@@ -20,3 +20,5 @@ class No_SG {
     No_SG *getDir() { return dir; }
     No_SG *getEsq() { return esq; }
 };
+
+#endif
