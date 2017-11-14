@@ -5,11 +5,13 @@
 class SG_Tree{
   private:
     No_SG *raiz ;
+    double Alpha; // Parametro que verifica desbalanceamento
     int qtde ; // Quantidade de itens na arvore
-    int logH(int h) {
-      // Necessita implementação
-      double LOG32e = 0;
-      return h;
+    double logbx(double base, double value){
+      return log(value) / log(base) ;
+    }
+    int logH(int h, double alpha) {
+      return ceil(logbx((1.0/alpha), h));
     }
     void reconstruirArvore();
     int inserindo(int v) {
@@ -73,14 +75,17 @@ class SG_Tree{
   protected:
 
   public:
-    SG_Tree() { raiz = NULL; }
+    SG_Tree(double A = 2.0/3.0) {
+      raiz = NULL;
+      Alpha = A;
+    }
     ~SG_Tree() {
       destruir(raiz);
     }
-    bool inserir(int v) {
-      int h = inserindo(v); // h recebe a altura da inserção
+    bool inserir(int valor) {
+      int h = inserindo(valor); // h recebe a altura da inserção de v
 
-      if (h > logH(qtde)) {
+      if (h > logH(qtde, Alpha)) {
         // Buscar a nova raiz
 
         // Reconstruir a nova arvore em relação a nova raiz
@@ -89,8 +94,8 @@ class SG_Tree{
 
       return h >= 0;
     }
-    void remover(int v) ;
-    void buscar(int v) ;
+    void remover(int valor) ;
+    void buscar(int valor) ;
     void preOrder(){
       preOrder(raiz);
     }
