@@ -12,11 +12,13 @@ class No_SG {
       valor = v;
       dir = esq = pai = NULL;
     }
-    ~No_SG(){ }
+    ~No_SG(){
+      
+    }
     void setValor(int v) { valor = v; }
     void setDir(No_SG *d) { dir = d; }
     void setEsq(No_SG *e) { esq = e; }
-    void setPai(No_SG *p) { pai = p; } 
+    void setPai(No_SG *p) { pai = p; }
     int getValor() { return valor; }
     No_SG *getDir() { return dir; }
     No_SG *getEsq() { return esq; }

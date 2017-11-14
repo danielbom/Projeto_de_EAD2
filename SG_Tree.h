@@ -1,76 +1,89 @@
 #ifndef SG_TREE
 #define SG_TREE
 #include "No_SG.h"
+#include <math.h>
 
 class SG_Tree{
   private:
     No_SG *raiz ;
     double Alpha; // Parametro que verifica desbalanceamento
     int qtde ; // Quantidade de itens na arvore
+
     double logbx(double base, double value){
-      return log(value) / log(base) ;
+      return (log(value) / log(base)) ;
     }
     int logH(int h, double alpha) {
-      return ceil(logbx((1.0/alpha), h));
+      return (int)ceil(logbx((1.0/alpha), h));
     }
-    void reconstruirArvore();
+
+    void reconstruirArvore(){
+      return ;
+    }
+
     int inserindo(int v) {
+      if (raiz == NULL) {
+        raiz = new No_SG(v);
+        qtde++;
+        return 0;
+      }
       No_SG *aux = raiz;
-      bool make = true;
+      bool feito = false;
       int h = 0;
+
       do {
         if (v > aux->getValor()) {
-          if (aux->getDir() != NULL) {
-            aux = aux->getDir(); // Busca na arvore direita
+          if (aux->getDir() == NULL) {
+            aux->setDir( new No_SG(v) ); // Insere
+            feito = true;
           }
           else {
-            aux->setDir( new No_SG(v) ); // Insere
-            make = false;
+            aux = aux->getDir(); // Busca na arvore direita
           }
         }
         else if (v < aux->getValor()) {
-          if (aux->getEsq() != NULL) {
-            aux = aux->getEsq(); // Busca na arvore esquerda
+          if (aux->getEsq() == NULL) {
+            aux->setEsq( new No_SG(v) ); // Insere
+            feito = true;
           }
           else {
-            aux->setDir( new No_SG(v) ); // Insere
-            make = false;
+            aux = aux->getEsq(); // Busca na arvore esquerda
           }
         }
         else {
           return -1; // Já existe
         }
         h++;
-      }while(make);
+      }while(!feito);
 
       qtde++;
       return h;
     }
+
     void preOrder(No_SG* no){
-      if(no != NULL) {
-        std::cout << no->getValor() << " " ;
-        preOrder(no->getEsq());
-        preOrder(no->getDir());
-      }
+      if (no == NULL) return ;
+      std::cout << no->getValor() << " " ;
+      preOrder(no->getEsq());
+      preOrder(no->getDir());
     }
     void posOrder(No_SG* no){
-      if(no != NULL) {
-        posOrder(no->getEsq());
-        posOrder(no->getDir());
-        std::cout << no->getValor() << " " ;
-      }
+      if (no == NULL) return ;
+      posOrder(no->getEsq());
+      posOrder(no->getDir());
+      std::cout << no->getValor() << " " ;
     }
     void inOrder(No_SG* no){
+      if (no == NULL) return ;
       inOrder(no->getEsq());
       std::cout << no->getValor() << " " ;
       inOrder(no->getDir());
     }
+
     void destruir(No_SG* no){
-      if(no != NULL) {
-        posOrder(no->getEsq());
-        posOrder(no->getDir());
-        delete no ;
-      }
+      if(no == NULL) return ;
+      destruir(no->getEsq());
+      destruir(no->getDir());
+      delete no ;
+
     }
   protected:
 
@@ -84,15 +97,16 @@ class SG_Tree{
     }
     bool inserir(int valor) {
       int h = inserindo(valor); // h recebe a altura da inserção de v
-
+      if (h == -1) return false;
       if (h > logH(qtde, Alpha)) {
+        std::cout << "Desbalanceada!!\n";
         // Buscar a nova raiz
 
         // Reconstruir a nova arvore em relação a nova raiz
         reconstruirArvore();
       }
 
-      return h >= 0;
+      return true;
     }
     void remover(int valor) ;
     void buscar(int valor) ;
