@@ -5,12 +5,12 @@
 
 class SG_Tree{
 	private:
-		No_SG *raiz ;
+		No_SG *raiz;
 		double Alpha; // Parametro que verifica desbalanceamento
-		int qtde ; // Quantidade de itens na arvore
+		int qtde; // Quantidade de itens na arvore
 
 		double logbx(double base, double value){
-			return (log(value) / log(base)) ;
+			return (log(value) / log(base));
 		}
 		int logH(int h, double alpha) {
 			return (int)ceil(logbx((1.0/alpha), h));
@@ -77,7 +77,7 @@ class SG_Tree{
 				std::cout << "Desbalanceada!!\n";
 
 				// Buscar o scapeGoat
-				while (3 * tam(inserido) <= 2 * tam(inserido->getPai())){
+				while ( (3 * tam(inserido)) <= (2 * tam(inserido->getPai())) ){
 					inserido = inserido->getPai();
 				}
 
@@ -115,6 +115,7 @@ class SG_Tree{
 			delete no ;
 
 		}
+
 	protected:
 
 	public:

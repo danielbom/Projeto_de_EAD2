@@ -12,13 +12,16 @@ class No_SG {
 			valor = 0;
 			dir = esq = pai = NULL;
 		}
+		
 		No_SG(int v){
 			valor = v;
 			dir = esq = pai = NULL;
 		}
+
 		~No_SG(){
 
 		}
+
 		void setValor(int v) { valor = v; }
 		void setDir(No_SG *d) { dir = d; }
 		void setEsq(No_SG *e) { esq = e; }
