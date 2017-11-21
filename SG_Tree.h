@@ -116,6 +116,42 @@ class SG_Tree{
 
 		}
 
+		No_SG* removendo(int valor, No_SG* no){
+			if (no == NULL)
+				return NULL;
+			else {
+				if (no->getValor() < valor)
+					no->setDir( removendo(valor, no->getDir()) );
+				else if (no->getValor() > valor)
+					no->setEsq( removendo(valor, no->getEsq()) );
+				else {
+					if (no->getEsq() == NULL && no->getDir() == NULL){
+						delete no;
+						return NULL;
+					}
+					else if (no->getEsq() != NULL && no->getDir() != NULL){
+						No_SG* aux = no->getDir();
+						while(aux->getEsq() != NULL)
+							aux = aux->getEsq();
+						no->setValor( aux->getValor() );
+
+						no->setDir( removendo(aux->getValor(), no->getDir()) );
+					}
+					else {
+						if (no->getEsq() != NULL){
+							No_SG* aux = no->getEsq();
+							delete no;
+							return aux;
+						}
+						else {
+							No_SG* aux = no->getDir();
+							delete no;
+							return aux;
+						}
+					}
+				}
+			}
+		}
 	protected:
 
 	public:
@@ -134,9 +170,29 @@ class SG_Tree{
 			return true;
 		}
 
-		void remover(int valor);
+		void remover(int valor) {
+			raiz = removendo(valor, raiz);
+		}
 
-		void buscar(int valor);
+		No_SG* buscar(int valor){
+			No_SG* aux = raiz;
+			do {
+				if (aux == NULL) {
+					return NULL;
+				}
+				else {
+					if (aux->getValor() < valor){
+						aux = aux->getDir();
+					}
+					else if (aux->getValor() > valor){
+						aux = aux->getEsq();
+					}
+					else {
+						return aux;
+					}
+				}
+			} while(true);
+		}
 
 		void preOrder(){
 			preOrder(raiz);
