@@ -16,23 +16,53 @@ class SG_Tree{
 			return (int)ceil(logbx((1.0/alpha), h));
 		}
 
-		int tam(No_SG *r) {
-
-			if (r == NULL) {
+		int grandeza(No_SG *no) {
+			if (no == NULL)
 				return 0;
-			}
 
-			int t = 1;
-			t += tam(r->getEsq());
-			t += tam(r->getDir());
-			return t;
+			return 1 + grandeza(no->getEsq()) + grandeza(no->getDir());
+		}
+
+		No_SG* construirArvoreBalanceado(No_SG** vet, int pos, int tam){
+			std::cout << "construirArvoreBalanceado\n";
+			return NULL;
+		}
+
+		int armazenarNoVetor(No_SG* no, No_SG** vet, int pos){
+			std::cout << "armazenarNoVetor\n";
+			if (no == NULL)
+				return pos;
+
+			pos = armazenarNoVetor(no->getEsq(), vet, pos);
+			vet[pos++] = no;
+			return armazenarNoVetor(no->getDir(), vet, pos);
 		}
 
 		void reconstruirArvore(No_SG *scapeGoat){
-			return ;
+			std::cout << "reconstruirArvore\n";
+			int tam = grandeza(scapeGoat);
+			std::cout << tam << std::endl;
+			No_SG* pai = scapeGoat->getPai();
+			std::cout << tam << std::endl;
+			No_SG* *vetor = new No_SG* [tam];
+
+			// add sg no vetor
+			/*if (pai == NULL) {
+				raiz = construirArvoreBalanceado(vetor, 0, tam);
+				raiz->setPai( NULL );
+			}
+			else if (pai->getDir() == scapeGoat){
+				pai->setDir( construirArvoreBalanceado(vetor, 0, tam) );
+				pai->getDir()->setPai( pai );
+			}
+			else {
+				pai->setEsq( construirArvoreBalanceado(vetor, 0, tam) );
+				pai->getEsq()->setPai( pai );
+			}*/
 		}
 
 		int inserindo(int v) {
+			std::cout << "inserindo\n";
 			if (raiz == NULL) {
 				raiz = new No_SG(v);
 				qtde++;
@@ -77,7 +107,7 @@ class SG_Tree{
 				std::cout << "Desbalanceada!!\n";
 
 				// Buscar o scapeGoat
-				while ( (3 * tam(inserido)) <= (2 * tam(inserido->getPai())) ){
+				while ( (3 * grandeza(inserido)) <= (2 * grandeza(inserido->getPai())) ){
 					inserido = inserido->getPai();
 				}
 
