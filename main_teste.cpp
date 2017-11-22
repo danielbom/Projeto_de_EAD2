@@ -24,12 +24,12 @@ int main () {
   cout << "InOrder:\n";
   sg->inOrder();
   cout << endl;
-  sg->remover(8);
+  //sg->remover(8);
 
   cout << "PosOrder:\n";
   sg->posOrder();
   cout << endl;
-  sg->remover(4);
+  //sg->remover(4);
 
   cout << "PreOrder:\n";
   sg->preOrder();

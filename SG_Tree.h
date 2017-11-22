@@ -13,6 +13,7 @@ class SG_Tree{
 			return (log(value) / log(base));
 		}
 		int logH(int h, double alpha) {
+		    //std::cout << h << " " << alpha << " " << (int)ceil(logbx((1.0/alpha), h)) << std::endl;
 			return (int)ceil(logbx((1.0/alpha), h));
 		}
 
@@ -71,9 +72,17 @@ class SG_Tree{
 		}
 
 		void reconstruirArvore(No_SG *scapeGoat){
-			std::cout << "Reconstruindo Árvore\n";
+			std::cout << "Reconstruindo Arvore\n";
 			int tam_sg = grandeza(scapeGoat);
-			std::cout << tam << std::endl;
+			/* DEBUG
+			if (scapeGoat == NULL) {
+                std::cout << "SG null\n";
+			}
+			else
+                std::cout << scapeGoat->getValor() << std::endl;
+
+			std::cout << tam_sg << std::endl;
+			*/
 			No_SG *pai = scapeGoat->getPai();
 			No_SG **vetor = new No_SG* [tam_sg];
 			armazenarNoVetor(scapeGoat, vetor, 0);
@@ -136,17 +145,38 @@ class SG_Tree{
 				}
 				h++;
 			} while(!feito);
+			/* DEBUG
+			if (inserido != NULL)
+                std::cout << " Valor inserido: " << inserido->getValor() << " pai: " << inserido->getPai()->getValor() << std::endl;
+            */
 
+			//std::cout << h << " > " << logH(qtde, Alpha) << std::endl;
 			if (h > logH(qtde, Alpha)) {
-				std::cout << "Desbalanceada!!\n";
+				//std::cout << "Desbalanceada!!\n";
 
 				// Buscar o scapeGoat
 				while ( (3 * grandeza(inserido)) <= (2 * grandeza(inserido->getPai())) ){
+                    //std::cout << "Se " <<(3 * grandeza(inserido)) << " <= " << (2 * grandeza(inserido->getPai())) << " SOBE " <<std::endl;
 					inserido = inserido->getPai();
+					//std::cout << "Se " <<(3 * grandeza(inserido)) << " <= " << (2 * grandeza(inserido->getPai())) << " SOBE " <<std::endl;
 				}
 
+				/* DEBUG
+				if(inserido!=NULL)
+                    std::cout << inserido->getValor();
+                if(inserido->getPai() != NULL)
+                    std::cout << " " << inserido->getPai()->getValor() << std::endl;
+                else
+                    std::cout << std::endl;
+                */
+
 				// Reconstruir a nova arvore em relação a nova raiz
-				reconstruirArvore(inserido->getPai());
+				///reconstruirArvore(inserido->getPai()); // ANTERIOR
+				reconstruirArvore(inserido); // TESTE
+				// O problema nao era a funcao grandeza, mas sim neste ponto.
+				// Essa mudança tecnicamente concertou o erro.
+				// Antes se meu SG era a raiz ele enviava um pai NULL e nao executava
+				// Talvez um if, else??? pois o modelo do site geeksforgeeks manda o pai???
 			}
 
 			qtde++;
@@ -222,12 +252,26 @@ class SG_Tree{
 				}
 			}
 		}
+        No_SG* buscando(int valor, No_SG* no){
+            if(no == NULL)
+                return NULL;
+            else {
+                if(valor > no->getValor())
+                    return buscando(valor, no->getDir());
+                else if (valor < no->getValor())
+                    return buscando(valor, no->getEsq());
+                else {
+                    return no;
+                }
+            }
+        }
 	protected:
 
 	public:
 		SG_Tree(double A = 2.0/3.0) {
 			raiz = NULL;
 			Alpha = A;
+			qtde = 0;
 		}
 
 		~SG_Tree() {
@@ -263,6 +307,12 @@ class SG_Tree{
 				}
 			} while(true);
 		}
+		// Versao recursiva da funcao busca... Necessita testes
+		/*
+		No_SG* buscar(int valor){
+            return buscando(valor, raiz);
+		}
+		*/
 
 		void preOrder(){
 			preOrder(raiz);
