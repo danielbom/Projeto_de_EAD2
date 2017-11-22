@@ -33,7 +33,9 @@ int main () {
 
   cout << "PreOrder:\n";
   sg->preOrder();
-  cout << endl;
+  cout << endl << endl;
+
+  cout << sg->buscar(0)->getValor() << endl;
 
   delete sg;
   return 0;

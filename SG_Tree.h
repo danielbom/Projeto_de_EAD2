@@ -34,16 +34,6 @@ class SG_Tree{
 			return armazenarNoVetor(no->getDir(), vet, pos);
 		}
 
-		// int toArray(No_SG *sg, No_SG **aux, int b){
-		// 	if (sg == NULL) {
-		// 		return b;
-		// 	}
-          //
-		// 	b = toArray(sg->getEsq(), aux, b);
-		// 	aux[b++] = sg;
-		// 	return toArray(sg->getDir(), aux, b);
-		// }
-
 		No_SG *construirBalanceado(No_SG **aux, int b, int tam_sg){
 			if (tam_sg == 0){
 				return NULL;
@@ -64,6 +54,42 @@ class SG_Tree{
 				std::cout << "Balanceando Direita\n";
 			}
 			return aux[b + meio];
+		}
+
+		void VerificaDesbalanceio(int h, No_SG* inserido){
+			//std::cout << h << " > " << logH(qtde, Alpha) << std::endl;
+			if (h > logH(qtde, Alpha)) {
+				//std::cout << "Desbalanceada!!\n";
+
+				// Buscar o scapeGoat
+				// while ( (3 * grandeza(inserido)) <= (2 * grandeza(inserido->getPai())) ){
+				while ( (grandeza(inserido)/grandeza(inserido->getPai())) >= Alpha ){
+				//std::cout << "Se " <<(3 * grandeza(inserido)) << " <= " << (2 * grandeza(inserido->getPai())) << " SOBE " <<std::endl;
+					inserido = inserido->getPai();
+					//std::cout << "Se " <<(3 * grandeza(inserido)) << " <= " << (2 * grandeza(inserido->getPai())) << " SOBE " <<std::endl;
+				}
+
+				/* DEBUG
+				if(inserido!=NULL)
+                    std::cout << inserido->getValor();
+                if(inserido->getPai() != NULL)
+                    std::cout << " " << inserido->getPai()->getValor() << std::endl;
+                else
+                    std::cout << std::endl;
+                */
+
+				// Reconstruir a nova arvore em relação a nova raiz
+				// reconstruirArvore(inserido->getPai()); // ANTERIOR
+				// reconstruirArvore(inserido); // TESTE
+				// O problema nao era a funcao grandeza, mas sim neste ponto.
+				// Essa mudança tecnicamente concertou o erro.
+				// Antes se meu SG era a raiz ele enviava um pai NULL e nao executava
+				// Talvez um if, else??? pois o modelo do site geeksforgeeks manda o pai???
+				if (inserido == raiz)
+					reconstruirArvore(inserido);
+				else
+					reconstruirArvore(inserido->getPai());
+			}
 		}
 
 		void reconstruirArvore(No_SG *scapeGoat){
@@ -140,40 +166,8 @@ class SG_Tree{
 			/* DEBUG
 			if (inserido != NULL)
                 std::cout << " Valor inserido: " << inserido->getValor() << " pai: " << inserido->getPai()->getValor() << std::endl;
-            */
-
-			//std::cout << h << " > " << logH(qtde, Alpha) << std::endl;
-			if (h > logH(qtde, Alpha)) {
-				//std::cout << "Desbalanceada!!\n";
-
-				// Buscar o scapeGoat
-				while ( (3 * grandeza(inserido)) <= (2 * grandeza(inserido->getPai())) ){
-                    //std::cout << "Se " <<(3 * grandeza(inserido)) << " <= " << (2 * grandeza(inserido->getPai())) << " SOBE " <<std::endl;
-					inserido = inserido->getPai();
-					//std::cout << "Se " <<(3 * grandeza(inserido)) << " <= " << (2 * grandeza(inserido->getPai())) << " SOBE " <<std::endl;
-				}
-
-				/* DEBUG
-				if(inserido!=NULL)
-                    std::cout << inserido->getValor();
-                if(inserido->getPai() != NULL)
-                    std::cout << " " << inserido->getPai()->getValor() << std::endl;
-                else
-                    std::cout << std::endl;
-                */
-
-				// Reconstruir a nova arvore em relação a nova raiz
-				///reconstruirArvore(inserido->getPai()); // ANTERIOR
-				// reconstruirArvore(inserido); // TESTE
-				// O problema nao era a funcao grandeza, mas sim neste ponto.
-				// Essa mudança tecnicamente concertou o erro.
-				// Antes se meu SG era a raiz ele enviava um pai NULL e nao executava
-				// Talvez um if, else??? pois o modelo do site geeksforgeeks manda o pai???
-				if (inserido == raiz)
-					reconstruirArvore(inserido);
-				else
-					reconstruirArvore(inserido->getPai());
-			}
+            	*/
+		  	VerificaDesbalanceio(h, inserido);
 
 			qtde++;
 			return h;
@@ -185,12 +179,14 @@ class SG_Tree{
 			preOrder(no->getEsq());
 			preOrder(no->getDir());
 		}
+
 		void posOrder(No_SG* no){
 			if (no == NULL) return ;
 			posOrder(no->getEsq());
 			posOrder(no->getDir());
 			std::cout << no->getValor() << " " ;
 		}
+
 		void inOrder(No_SG* no){
 			if (no == NULL) return ;
 			inOrder(no->getEsq());
@@ -248,7 +244,8 @@ class SG_Tree{
 				}
 			}
 		}
-	  	No_SG* buscando(int valor, No_SG* no){
+
+		No_SG* buscando(int valor, No_SG* no){
 		    	if(no == NULL)
 		     	return NULL;
 		     else {
@@ -261,6 +258,37 @@ class SG_Tree{
 		        	}
 	    		}
 		}
+
+		/*No_SG* inserindoRec(int valor, No_SG* no, int h){
+			std::cout << "inserindoRec\n";
+			if(no == NULL) {
+				return new No_SG(valor);
+			}
+			else{
+				if(no->getValor() < valor){
+					no->setDir( inserindoRec(valor, no->getDir(), h+1) );
+				}
+				else if(no->getValor() > valor){
+					no->setEsq( inserindoRec(valor, no->getEsq(), h+1) );
+				}
+				else {
+					return no;
+				}
+			}
+			if(no->getValor() < valor && no->getDir() != NULL) {
+				if(no->getDir()->getValor() == valor){
+					no->getDir()->setPai(no);
+					VerificaDesbalanceio(h+1, no->getDir());
+				}
+			}
+			else if(no->getValor() > valor && no->getEsq() != NULL){
+				if(no->getEsq()->getValor() == valor){
+					no->getEsq()->setPai(no);
+					VerificaDesbalanceio(h+1, no->getEsq());
+				}
+			}
+		}*/
+
 	protected:
 
 	public:
@@ -280,10 +308,18 @@ class SG_Tree{
 			return true;
 		}
 
+		/*
+		void inserir(int valor){
+			raiz = inserindoRec(valor, raiz, 0);
+		}
+		*/
+
+
 		void remover(int valor) {
 			raiz = removendo(valor, raiz);
 		}
 
+		/*
 		No_SG* buscar(int valor){
 			No_SG* aux = raiz;
 			do {
@@ -303,12 +339,11 @@ class SG_Tree{
 				}
 			} while(true);
 		}
-		// Versao recursiva da funcao busca... Necessita testes
-		/*
+		*/
+		// Versao recursiva da funcao busca...
 		No_SG* buscar(int valor){
             return buscando(valor, raiz);
 		}
-		*/
 
 		void preOrder(){
 			preOrder(raiz);
