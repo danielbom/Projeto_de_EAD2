@@ -24,11 +24,6 @@ class SG_Tree{
 			return 1 + grandeza(no->getEsq()) + grandeza(no->getDir());
 		}
 
-		// No_SG* construirArvoreBalanceado(No_SG** vet, int pos, int tam){
-		// 	std::cout << "construirArvoreBalanceado\n";
-		// 	return NULL;
-		// }
-
 		int armazenarNoVetor(No_SG* no, No_SG** vet, int pos){
 			std::cout << "Armazenando no vetor\n";
 			if (no == NULL){
@@ -87,18 +82,15 @@ class SG_Tree{
 			No_SG **vetor = new No_SG* [tam_sg];
 			armazenarNoVetor(scapeGoat, vetor, 0);
 
-			if (pai == NULL)
-			{
+			if (pai == NULL){
 				raiz = construirBalanceado(vetor, 0, tam_sg);
 				raiz->setPai(NULL);
 			}
-			else if (pai->getDir() == scapeGoat)
-			{
+			else if (pai->getDir() == scapeGoat){
 				pai->setDir(construirBalanceado(vetor, 0, tam_sg));
 				pai->getDir()->setPai(pai);
 			}
-			else
-			{
+			else{
 				pai->setEsq(construirBalanceado(vetor, 0, tam_sg));
 				pai->getEsq()->setPai(pai);
 			}
@@ -172,11 +164,15 @@ class SG_Tree{
 
 				// Reconstruir a nova arvore em relação a nova raiz
 				///reconstruirArvore(inserido->getPai()); // ANTERIOR
-				reconstruirArvore(inserido); // TESTE
+				// reconstruirArvore(inserido); // TESTE
 				// O problema nao era a funcao grandeza, mas sim neste ponto.
 				// Essa mudança tecnicamente concertou o erro.
 				// Antes se meu SG era a raiz ele enviava um pai NULL e nao executava
 				// Talvez um if, else??? pois o modelo do site geeksforgeeks manda o pai???
+				if (inserido == raiz)
+					reconstruirArvore(inserido);
+				else
+					reconstruirArvore(inserido->getPai());
 			}
 
 			qtde++;
@@ -252,19 +248,19 @@ class SG_Tree{
 				}
 			}
 		}
-        No_SG* buscando(int valor, No_SG* no){
-            if(no == NULL)
-                return NULL;
-            else {
-                if(valor > no->getValor())
-                    return buscando(valor, no->getDir());
-                else if (valor < no->getValor())
-                    return buscando(valor, no->getEsq());
-                else {
-                    return no;
-                }
-            }
-        }
+	  	No_SG* buscando(int valor, No_SG* no){
+		    	if(no == NULL)
+		     	return NULL;
+		     else {
+		        	if(valor > no->getValor())
+		            	return buscando(valor, no->getDir());
+		        	else if (valor < no->getValor())
+		            	return buscando(valor, no->getEsq());
+		        	else {
+		            	return no;
+		        	}
+	    		}
+		}
 	protected:
 
 	public:
