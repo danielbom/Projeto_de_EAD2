@@ -16,49 +16,85 @@ class SG_Tree{
 			return (int)ceil(logbx((1.0/alpha), h));
 		}
 
-		int tam(No_SG *r) {
-
-			if (r == NULL) {
+		int grandeza(No_SG *no) {
+			if (no == NULL)
 				return 0;
-			}
 
-			int t = 1;
-			t += tam(r->getEsq());
-			t += tam(r->getDir());
-			return t;
+			return 1 + grandeza(no->getEsq()) + grandeza(no->getDir());
 		}
 
-		No_SG *toArray(No_SG *sg, No_SG **aux, int b){
+		No_SG* construirArvoreBalanceado(No_SG** vet, int pos, int tam){
+			std::cout << "construirArvoreBalanceado\n";
 			return NULL;
+		}
+
+		int armazenarNoVetor(No_SG* no, No_SG** vet, int pos){
+			std::cout << "armazenarNoVetor\n";
+			if (no == NULL)
+				return pos;
+
+			pos = armazenarNoVetor(no->getEsq(), vet, pos);
+			vet[pos++] = no;
+			return armazenarNoVetor(no->getDir(), vet, pos);
+		}
+
+		int toArray(No_SG *sg, No_SG **aux, int b){
+			if (sg == NULL) {
+				return b;
+			}
+
+			b = toArray(sg->getEsq(), aux, b);
+			aux[b++] = sg;
+			return toArray(sg->getDir(), aux, b);
 		}
 
 		No_SG *construirBalanceado(No_SG **aux, int b, int tam_sg){
-			return NULL;
+			if (tam_sg == 0){
+				return NULL;
+			}
+
+			int meio = tam_sg / 2;
+			aux[b + meio]->setEsq(construirBalanceado(aux, b, meio));
+
+			if (aux[b + meio]->getEsq() != NULL){
+				aux[b + meio]->getEsq()->setPai(aux[b + meio]);
+			}
+
+			aux[b + meio]->setDir(construirBalanceado(aux, b + meio + 1, tam_sg - meio - 1));\
+
+			if (aux[b + meio]->getDir() != NULL){
+				aux[b + meio]->getDir()->setPai(aux[b + meio]);
+			}
+			return aux[b + meio];
 		}
 
 		void reconstruirArvore(No_SG *scapeGoat){
-			int tam_sg = tam(scapeGoat);
-			No_SG *p = scapeGoat->getPai();
-			No_SG **aux = new No_SG* [tam_sg];
-			toArray(scapeGoat, aux, 0);
-			if (p == NULL)
+			std::cout << "Reconstruindo Árvore\n";
+			int tam_sg = grandeza(scapeGoat);
+			std::cout << tam << std::endl;
+			No_SG *pai = scapeGoat->getPai();
+			No_SG **vetor = new No_SG* [tam_sg];
+			toArray(scapeGoat, vetor, 0);
+
+			if (pai == NULL)
 			{
-				raiz = construirBalanceado(aux, 0, tam_sg);
+				raiz = construirBalanceado(vetor, 0, tam_sg);
 				raiz->setPai(NULL);
 			}
-			else if (p->getDir() == scapeGoat)
+			else if (pai->getDir() == scapeGoat)
 			{
-				p->setDir(construirBalanceado(aux, 0, tam_sg));
-				p->getDir()->setPai(p);
+				pai->setDir(construirBalanceado(vetor, 0, tam_sg));
+				pai->getDir()->setPai(pai);
 			}
 			else
 			{
-				p->setEsq(construirBalanceado(aux, 0, tam_sg));
-				p->getEsq()->setPai(p);
+				pai->setEsq(construirBalanceado(vetor, 0, tam_sg));
+				pai->getEsq()->setPai(pai);
 			}
 		}
 
 		int inserindo(int v) {
+			std::cout << "inserindo\n";
 			if (raiz == NULL) {
 				raiz = new No_SG(v);
 				qtde++;
@@ -103,7 +139,7 @@ class SG_Tree{
 				std::cout << "Desbalanceada!!\n";
 
 				// Buscar o scapeGoat
-				while ( (3 * tam(inserido)) <= (2 * tam(inserido->getPai())) ){
+				while ( (3 * grandeza(inserido)) <= (2 * grandeza(inserido->getPai())) ){
 					inserido = inserido->getPai();
 				}
 
@@ -142,6 +178,42 @@ class SG_Tree{
 
 		}
 
+		No_SG* removendo(int valor, No_SG* no){
+			if (no == NULL)
+				return NULL;
+			else {
+				if (no->getValor() < valor)
+					no->setDir( removendo(valor, no->getDir()) );
+				else if (no->getValor() > valor)
+					no->setEsq( removendo(valor, no->getEsq()) );
+				else {
+					if (no->getEsq() == NULL && no->getDir() == NULL){
+						delete no;
+						return NULL;
+					}
+					else if (no->getEsq() != NULL && no->getDir() != NULL){
+						No_SG* aux = no->getDir();
+						while(aux->getEsq() != NULL)
+							aux = aux->getEsq();
+						no->setValor( aux->getValor() );
+
+						no->setDir( removendo(aux->getValor(), no->getDir()) );
+					}
+					else {
+						if (no->getEsq() != NULL){
+							No_SG* aux = no->getEsq();
+							delete no;
+							return aux;
+						}
+						else {
+							No_SG* aux = no->getDir();
+							delete no;
+							return aux;
+						}
+					}
+				}
+			}
+		}
 	protected:
 
 	public:
@@ -160,9 +232,29 @@ class SG_Tree{
 			return true;
 		}
 
-		void remover(int valor);
+		void remover(int valor) {
+			raiz = removendo(valor, raiz);
+		}
 
-		void buscar(int valor);
+		No_SG* buscar(int valor){
+			No_SG* aux = raiz;
+			do {
+				if (aux == NULL) {
+					return NULL;
+				}
+				else {
+					if (aux->getValor() < valor){
+						aux = aux->getDir();
+					}
+					else if (aux->getValor() > valor){
+						aux = aux->getEsq();
+					}
+					else {
+						return aux;
+					}
+				}
+			} while(true);
+		}
 
 		void preOrder(){
 			preOrder(raiz);
