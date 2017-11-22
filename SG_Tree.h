@@ -28,8 +28,34 @@ class SG_Tree{
 			return t;
 		}
 
+		No_SG *toArray(No_SG *sg, No_SG **aux, int b){
+			return NULL;
+		}
+
+		No_SG *construirBalanceado(No_SG **aux, int b, int tam_sg){
+			return NULL;
+		}
+
 		void reconstruirArvore(No_SG *scapeGoat){
-			return ;
+			int tam_sg = tam(scapeGoat);
+			No_SG *p = scapeGoat->getPai();
+			No_SG **aux = new No_SG* [tam_sg];
+			toArray(scapeGoat, aux, 0);
+			if (p == NULL)
+			{
+				raiz = construirBalanceado(aux, 0, tam_sg);
+				raiz->setPai(NULL);
+			}
+			else if (p->getDir() == scapeGoat)
+			{
+				p->setDir(construirBalanceado(aux, 0, tam_sg));
+				p->getDir()->setPai(p);
+			}
+			else
+			{
+				p->setEsq(construirBalanceado(aux, 0, tam_sg));
+				p->getEsq()->setPai(p);
+			}
 		}
 
 		int inserindo(int v) {
