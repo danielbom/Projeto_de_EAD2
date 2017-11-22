@@ -23,30 +23,30 @@ class SG_Tree{
 			return 1 + grandeza(no->getEsq()) + grandeza(no->getDir());
 		}
 
-		No_SG* construirArvoreBalanceado(No_SG** vet, int pos, int tam){
-			std::cout << "construirArvoreBalanceado\n";
-			return NULL;
-		}
+		// No_SG* construirArvoreBalanceado(No_SG** vet, int pos, int tam){
+		// 	std::cout << "construirArvoreBalanceado\n";
+		// 	return NULL;
+		// }
 
 		int armazenarNoVetor(No_SG* no, No_SG** vet, int pos){
-			std::cout << "armazenarNoVetor\n";
-			if (no == NULL)
+			std::cout << "Armazenando no vetor\n";
+			if (no == NULL){
 				return pos;
-
+			}
 			pos = armazenarNoVetor(no->getEsq(), vet, pos);
 			vet[pos++] = no;
 			return armazenarNoVetor(no->getDir(), vet, pos);
 		}
 
-		int toArray(No_SG *sg, No_SG **aux, int b){
-			if (sg == NULL) {
-				return b;
-			}
-
-			b = toArray(sg->getEsq(), aux, b);
-			aux[b++] = sg;
-			return toArray(sg->getDir(), aux, b);
-		}
+		// int toArray(No_SG *sg, No_SG **aux, int b){
+		// 	if (sg == NULL) {
+		// 		return b;
+		// 	}
+          //
+		// 	b = toArray(sg->getEsq(), aux, b);
+		// 	aux[b++] = sg;
+		// 	return toArray(sg->getDir(), aux, b);
+		// }
 
 		No_SG *construirBalanceado(No_SG **aux, int b, int tam_sg){
 			if (tam_sg == 0){
@@ -58,12 +58,14 @@ class SG_Tree{
 
 			if (aux[b + meio]->getEsq() != NULL){
 				aux[b + meio]->getEsq()->setPai(aux[b + meio]);
+				std::cout << "Balanceando Esquerda\n";
 			}
 
 			aux[b + meio]->setDir(construirBalanceado(aux, b + meio + 1, tam_sg - meio - 1));\
 
 			if (aux[b + meio]->getDir() != NULL){
 				aux[b + meio]->getDir()->setPai(aux[b + meio]);
+				std::cout << "Balanceando Direita\n";
 			}
 			return aux[b + meio];
 		}
@@ -74,7 +76,7 @@ class SG_Tree{
 			std::cout << tam << std::endl;
 			No_SG *pai = scapeGoat->getPai();
 			No_SG **vetor = new No_SG* [tam_sg];
-			toArray(scapeGoat, vetor, 0);
+			armazenarNoVetor(scapeGoat, vetor, 0);
 
 			if (pai == NULL)
 			{
@@ -171,21 +173,27 @@ class SG_Tree{
 		}
 
 		void destruir(No_SG* no){
-			if(no == NULL) return ;
+			if(no == NULL){
+				return ;
+			}
+
 			destruir(no->getEsq());
 			destruir(no->getDir());
-			delete no ;
 
+			delete no ;
 		}
 
 		No_SG* removendo(int valor, No_SG* no){
-			if (no == NULL)
+			if (no == NULL){
 				return NULL;
+			}
 			else {
-				if (no->getValor() < valor)
+				if (no->getValor() < valor) {
 					no->setDir( removendo(valor, no->getDir()) );
-				else if (no->getValor() > valor)
+				}
+				else if (no->getValor() > valor) {
 					no->setEsq( removendo(valor, no->getEsq()) );
+				}
 				else {
 					if (no->getEsq() == NULL && no->getDir() == NULL){
 						delete no;
