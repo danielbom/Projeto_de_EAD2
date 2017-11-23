@@ -286,14 +286,20 @@ class SG_Tree{
 		}
 
 		No_SG* removendoRec(int valor, No_SG* no){
+            No_SG* aux = NULL;
             No_SG* sg = NULL;
+            bool d, e;
+            d = e = false;
             if(valor > no->getValor()){
                 if(no->getDir() != NULL) {
                     if(no->getDir()->getValor() == valor) {
-                        // remove
+                        aux = no->getDir();
+                        d = true;
                     }
                     else {
                         sg = removendoRec(valor, no->getDir());
+                        if(sg != NULL)
+                            return sg;
                     }
                 }
                 else
@@ -302,15 +308,46 @@ class SG_Tree{
             else if(valor < no->getValor()){
                 if(no->getEsq() != NULL) {
                     if(no->getEsq()->getValor() == valor){
-                        // remove
+                        aux = no->getEsq();
+                        e = true;
                     }
                     else {
                         sg = removendoRec(valor, no->getEsq());
+                        if(sg != NULL)
+                            return sg;
                     }
                 }
                 else
                     return NULL;
             }
+            // Removendo
+            if(aux!=NULL){
+                if(aux->getDir() == NULL && aux->getEsq() == NULL) {
+                    delete aux;
+                    if (e == true)
+                        no->setEsq(NULL);
+                    else if(d == true)
+                        no->setDir(NULL);
+                }
+                else if (aux->getEsq() != NULL && aux->getDir() != NULL){
+                    No_SG* aux2 = no->getDir();
+                    while(aux2->getEsq() != NULL)
+                        aux2 = aux2->getEsq();
+                    no->setValor( aux->getValor() );
+
+                    sg = removendoRec(aux->getValor(), no->getDir()) );
+                }
+            }
+
+            if(no->getDir() != NULL)
+				if( ((float)grandeza(no->getDir())/(float)grandeza(no)) >= Alpha )
+					return no;
+
+			if(no->getEsq() != NULL)
+				if ( ((float)grandeza(no->getEsq())/(float)grandeza(no)) >= Alpha )
+					return no;
+
+            return NULL;
 		}
 	protected:
 
@@ -367,6 +404,9 @@ class SG_Tree{
             if (raiz == NULL)
                 return false;
             No_SG* sg = removendoRec(valor, raiz);
+            if(sg != NULL) {
+
+            }
 		}
 
 		/*
