@@ -8,7 +8,8 @@ class SG_Tree{
 		No_SG *raiz;
 		double Alpha; // Parametro que verifica desbalanceamento
 		int qtde; // Quantidade de itens na arvore
-    int h; // Parametro temporario global q armazena o valor da profundidade da arvore
+        int h; // Parametro temporario global q armazena o valor da profundidade da arvore na hora da inserção recursiva
+        int hMax;
 
 		double logbx(double base, double value){
 			return (log(value) / log(base));
@@ -274,13 +275,15 @@ class SG_Tree{
 					no->getDir()->setPai(no);
 				}
 			}
-			if(no->getDir() != NULL)
-				if( ((float)grandeza(no->getDir())/(float)grandeza(no)) >= Alpha )
-					return no;
+			if (h > logH(qtde, Alpha)) {
+                if(no->getDir() != NULL)
+                    if( ((float)grandeza(no->getDir())/(float)grandeza(no)) >= Alpha )
+                        return no;
 
-			if(no->getEsq() != NULL)
-				if ( ((float)grandeza(no->getEsq())/(float)grandeza(no)) >= Alpha )
-					return no;
+                if(no->getEsq() != NULL)
+                    if ( ((float)grandeza(no->getEsq())/(float)grandeza(no)) >= Alpha )
+                        return no;
+			}
 
 			return NULL;
 		}
@@ -330,22 +333,41 @@ class SG_Tree{
                         no->setDir(NULL);
                 }
                 else if (aux->getEsq() != NULL && aux->getDir() != NULL){
-                    No_SG* aux2 = no->getDir();
-                    while(aux2->getEsq() != NULL)
-                        aux2 = aux2->getEsq();
-                    no->setValor( aux->getValor() );
+                    No_SG* menorMaiores = aux->getDir();
+                    while(menorMaiores->getEsq() != NULL)
+                        menorMaiores = menorMaiores->getEsq();
+                    menorMaiores->setValor( aux->getValor() );
 
-                    sg = removendoRec(aux->getValor(), no->getDir()) );
+                    sg = removendoRec(aux->getValor(), no->getDir());
+                    if(sg != NULL)
+                        return sg;
+                }
+                else {
+                    if(aux->getEsq() != NULL){
+                        if (e == true)
+                            no->setEsq(aux->getEsq());
+                        else if(d == true)
+                            no->setDir(aux->getEsq());
+                        delete aux;
+                    }
+                    else{
+                        if (e == true)
+                            no->setEsq(aux->getDir());
+                        else if(d == true)
+                            no->setDir(aux->getDir());
+                        delete aux;
+                    }
                 }
             }
+            if (hMax > logH(qtde, Alpha)) {
+                if(no->getDir() != NULL)
+                    if( ((float)grandeza(no->getDir())/(float)grandeza(no)) >= Alpha )
+                        return no;
 
-            if(no->getDir() != NULL)
-				if( ((float)grandeza(no->getDir())/(float)grandeza(no)) >= Alpha )
-					return no;
-
-			if(no->getEsq() != NULL)
-				if ( ((float)grandeza(no->getEsq())/(float)grandeza(no)) >= Alpha )
-					return no;
+                if(no->getEsq() != NULL)
+                    if ( ((float)grandeza(no->getEsq())/(float)grandeza(no)) >= Alpha )
+                        return no;
+            }
 
             return NULL;
 		}
@@ -357,6 +379,7 @@ class SG_Tree{
 			raiz = NULL;
 			Alpha = A;
 			qtde = 0;
+			hMax = 0;
 		}
 
 		~SG_Tree() {
@@ -371,7 +394,7 @@ class SG_Tree{
 		}
 		*/
 		bool inserir(int valor){
-			h = 0;
+			h = 1;
 			No_SG* sg = NULL;
 			int tmp = qtde;
 			if (raiz == NULL){
@@ -382,15 +405,15 @@ class SG_Tree{
                 sg = inserindoRec(valor, raiz);
 			}
 			if (sg != NULL){
-				if (h > logH(qtde, Alpha)) {
-                    // std::cout << valor << " Arvore Desbalanceada\n";
-                    if (sg == raiz)
-                        reconstruirArvore(sg);
-                    else
-                        reconstruirArvore(sg->getPai());
-				}
+                //std::cout << valor << " Arvore Desbalanceada na insercao\n";
+                if (sg == raiz)
+                    reconstruirArvore(sg);
+                else
+                    reconstruirArvore(sg->getPai());
 
 			}
+			if (h < hMax)
+                hMax = h;
 			if(qtde == tmp)
                 return false;
             return true;
@@ -405,7 +428,11 @@ class SG_Tree{
                 return false;
             No_SG* sg = removendoRec(valor, raiz);
             if(sg != NULL) {
-
+                //std::cout << valor << " Arvore Desbalanceada na delecao\n";
+                if (sg == raiz)
+                    reconstruirArvore(sg);
+                else
+                    reconstruirArvore(sg->getPai());
             }
 		}
 

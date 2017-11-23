@@ -2,42 +2,32 @@
 <CodeBlocks_layout_file>
 	<FileVersion major="1" minor="0" />
 	<ActiveTarget name="Debug" />
-	<File name="SG_Tree.h" open="1" top="1" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="main.cpp" open="1" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="9177" topLine="50" />
+			<Cursor1 position="111" topLine="0" />
 		</Cursor>
-		<Folding>
-			<Collapse line="12" />
-			<Collapse line="15" />
-			<Collapse line="20" />
-			<Collapse line="27" />
-			<Collapse line="37" />
-			<Collapse line="59" />
-			<Collapse line="86" />
-			<Collapse line="116" />
-			<Collapse line="164" />
-			<Collapse line="171" />
-			<Collapse line="178" />
-			<Collapse line="185" />
-			<Collapse line="196" />
-			<Collapse line="236" />
-			<Collapse line="249" />
-			<Collapse line="252" />
-			<Collapse line="264" />
-			<Collapse line="292" />
-			<Collapse line="307" />
-			<Collapse line="355" />
-			<Collapse line="372" />
-		</Folding>
 	</File>
 	<File name="No_SG.h" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
 			<Cursor1 position="0" topLine="0" />
 		</Cursor>
 	</File>
-	<File name="main.cpp" open="1" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="SG_Tree.h" open="1" top="1" tabpos="2" split="0" active="1" splitpos="0" zoom_1="-1" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="106" topLine="0" />
+			<Cursor1 position="10973" topLine="166" />
 		</Cursor>
+		<Folding>
+			<Collapse line="13" />
+			<Collapse line="16" />
+			<Collapse line="21" />
+			<Collapse line="28" />
+			<Collapse line="38" />
+			<Collapse line="60" />
+			<Collapse line="117" />
+			<Collapse line="165" />
+			<Collapse line="172" />
+			<Collapse line="179" />
+			<Collapse line="290" />
+		</Folding>
 	</File>
 </CodeBlocks_layout_file>
