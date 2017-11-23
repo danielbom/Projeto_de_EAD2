@@ -8,6 +8,7 @@ class SG_Tree{
 		No_SG *raiz;
 		double Alpha; // Parametro que verifica desbalanceamento
 		int qtde; // Quantidade de itens na arvore
+        int h;
 
 		double logbx(double base, double value){
 			return (log(value) / log(base));
@@ -68,15 +69,6 @@ class SG_Tree{
 					inserido = inserido->getPai();
 					//std::cout << "Se " <<(3 * grandeza(inserido)) << " <= " << (2 * grandeza(inserido->getPai())) << " SOBE " <<std::endl;
 				}
-
-				/* DEBUG
-				if(inserido!=NULL)
-                    std::cout << inserido->getValor();
-                if(inserido->getPai() != NULL)
-                    std::cout << " " << inserido->getPai()->getValor() << std::endl;
-                else
-                    std::cout << std::endl;
-                */
 
 				// Reconstruir a nova arvore em relação a nova raiz
 				// reconstruirArvore(inserido->getPai()); // ANTERIOR
@@ -165,9 +157,9 @@ class SG_Tree{
 			} while(!feito);
 			/* DEBUG
 			if (inserido != NULL)
-                std::cout << " Valor inserido: " << inserido->getValor() << " pai: " << inserido->getPai()->getValor() << std::endl;
-            	*/
-		  	VerificaDesbalanceio(h, inserido);
+        std::cout << " Valor inserido: " << inserido->getValor() << " pai: " << inserido->getPai()->getValor() << std::endl;
+      */
+		  VerificaDesbalanceio(h, inserido);
 
 			qtde++;
 			return h;
@@ -258,37 +250,69 @@ class SG_Tree{
 		        	}
 	    		}
 		}
+		/*
+		void verificaDireito(No_SG* no){
+			std::cout << "h: " << h << std::endl;
+			if(h > logH(qtde ,Alpha)){
+				std::cout << "Desbalanceada - " << ((float)grandeza(no)/(float)grandeza(no->getDir())) << std::endl;
+				if((float)(grandeza(no)/grandeza(no->getDir())) >= Alpha){
+                    std::cout << "AQUI ????\n";
+					if (no == raiz)
+						reconstruirArvore(no);
+					else
+						reconstruirArvore(no->getPai());
+				}
+			}
+		}
+		void verificaEsquerdo(No_SG* no){
+			std::cout << "h: " << h << std::endl;
+			if(h > logH(qtde ,Alpha)){
+				std::cout << "Desbalanceada - " << ((float)grandeza(no)/(float)grandeza(no->getEsq())) << std::endl;
+				// if ( (filho / pai) >= Alpha)
+				if( ((float)grandeza(no->getEsq())/(float)grandeza(no)) >= Alpha ){
+					if (no == raiz)
+						reconstruirArvore(no);
+					else
+						reconstruirArvore(no->getPai());
+				}
+			}
+		}
 
-		/*No_SG* inserindoRec(int valor, No_SG* no, int h){
-			std::cout << "inserindoRec\n";
-			if(no == NULL) {
+		No_SG* inserindoRec(int valor, No_SG* no){
+			h++;
+			if(no == NULL){
+				qtde++;
 				return new No_SG(valor);
 			}
-			else{
-				if(no->getValor() < valor){
-					no->setDir( inserindoRec(valor, no->getDir(), h+1) );
+			else {
+				if(no->getValor() > valor) {
+					if(no->getEsq() != NULL){
+						no->setEsq( inserindoRec(valor, no->getEsq()) );
+						verificaEsquerdo(no);
+					}
+					else{
+						qtde++;
+						no->setEsq(new No_SG(valor));
+						no->getEsq()->setPai(no);
+						verificaEsquerdo(no);
+					}
 				}
-				else if(no->getValor() > valor){
-					no->setEsq( inserindoRec(valor, no->getEsq(), h+1) );
-				}
-				else {
-					return no;
+				else if(no->getValor() < valor){
+					if(no->getDir() != NULL){
+						no->setDir( inserindoRec(valor, no->getDir()) );
+						verificaDireito(no);
+					}
+					else{
+						qtde++;
+						no->setDir( new No_SG(valor));
+						no->getDir()->setPai(no);
+						verificaDireito(no);
+					}
 				}
 			}
-			if(no->getValor() < valor && no->getDir() != NULL) {
-				if(no->getDir()->getValor() == valor){
-					no->getDir()->setPai(no);
-					VerificaDesbalanceio(h+1, no->getDir());
-				}
-			}
-			else if(no->getValor() > valor && no->getEsq() != NULL){
-				if(no->getEsq()->getValor() == valor){
-					no->getEsq()->setPai(no);
-					VerificaDesbalanceio(h+1, no->getEsq());
-				}
-			}
-		}*/
-
+			return no;
+		}
+		*/
 	protected:
 
 	public:
@@ -308,11 +332,12 @@ class SG_Tree{
 			return true;
 		}
 
-		/*
-		void inserir(int valor){
-			raiz = inserindoRec(valor, raiz, 0);
-		}
-		*/
+
+		/*void inserir(int valor){
+			h = 0;
+			raiz = inserindoRec(valor, raiz);
+		}*/
+
 
 
 		void remover(int valor) {

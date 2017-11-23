@@ -10,11 +10,15 @@ int main () {
   sg->inserir(2);
   sg->inserir(1);*/
 
+  sg->inserir(10);
+  sg->inserir(9);
   sg->inserir(7);
   sg->inserir(6);
   sg->inserir(3);
   sg->inserir(1);
   sg->inserir(0);
+  //sg->preOrder();
+  //cout<<endl;
   sg->inserir(8);
   sg->inserir(9);
   sg->inserir(4);
@@ -24,12 +28,12 @@ int main () {
   cout << "InOrder:\n";
   sg->inOrder();
   cout << endl;
-  sg->remover(8);
+  //sg->remover(8);
 
   cout << "PosOrder:\n";
   sg->posOrder();
   cout << endl;
-  sg->remover(4);
+  //sg->remover(4);
 
   cout << "PreOrder:\n";
   sg->preOrder();
