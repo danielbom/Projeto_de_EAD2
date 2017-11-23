@@ -26,7 +26,7 @@ class SG_Tree{
 		}
 
 		int armazenarNoVetor(No_SG* no, No_SG** vet, int pos){
-			std::cout << "Armazenando no vetor\n";
+			//std::cout << "Armazenando no vetor\n";
 			if (no == NULL){
 				return pos;
 			}
@@ -45,14 +45,14 @@ class SG_Tree{
 
 			if (aux[b + meio]->getEsq() != NULL){
 				aux[b + meio]->getEsq()->setPai(aux[b + meio]);
-				std::cout << "Balanceando Esquerda\n";
+				//std::cout << "Balanceando Esquerda\n";
 			}
 
 			aux[b + meio]->setDir(construirBalanceado(aux, b + meio + 1, tam_sg - meio - 1));\
 
 			if (aux[b + meio]->getDir() != NULL){
 				aux[b + meio]->getDir()->setPai(aux[b + meio]);
-				std::cout << "Balanceando Direita\n";
+				//std::cout << "Balanceando Direita\n";
 			}
 			return aux[b + meio];
 		}
@@ -85,7 +85,7 @@ class SG_Tree{
 		}
 
 		void reconstruirArvore(No_SG *scapeGoat){
-			std::cout << "Reconstruindo Arvore\n";
+			//std::cout << "Reconstruindo Arvore\n";
 			int tam_sg = grandeza(scapeGoat);
 			/* DEBUG
 			if (scapeGoat == NULL) {
@@ -115,7 +115,7 @@ class SG_Tree{
 		}
 
 		int inserindo(int v) {
-			std::cout << "inserindo\n";
+			//std::cout << "inserindo\n";
 			if (raiz == NULL) {
 				raiz = new No_SG(v);
 				qtde++;
@@ -235,17 +235,16 @@ class SG_Tree{
 		}
 
 		No_SG* buscando(int valor, No_SG* no){
-		    	if(no == NULL)
-		     	return NULL;
-		     else {
-		        	if(valor > no->getValor())
-		            	return buscando(valor, no->getDir());
-		        	else if (valor < no->getValor())
-		            	return buscando(valor, no->getEsq());
-		        	else {
-		            	return no;
-		        	}
-	    		}
+            if(no == NULL)
+                return NULL;
+            else {
+                if(valor > no->getValor())
+                    return buscando(valor, no->getDir());
+                else if (valor < no->getValor())
+                    return buscando(valor, no->getEsq());
+                else
+                    return no;
+            }
 		}
 
 		No_SG* inserindoRec(int valor, No_SG* no){
@@ -275,24 +274,49 @@ class SG_Tree{
 					no->getDir()->setPai(no);
 				}
 			}
-			if(no->getDir() != NULL){
+			if(no->getDir() != NULL)
+				if( ((float)grandeza(no->getDir())/(float)grandeza(no)) >= Alpha )
+					return no;
 
-				if( ((float)grandeza(no->getDir())/(float)grandeza(no)) >= Alpha ){
+			if(no->getEsq() != NULL)
+				if ( ((float)grandeza(no->getEsq())/(float)grandeza(no)) >= Alpha )
 					return no;
-				}
-			}
-			if(no->getEsq() != NULL){
-				if ( ((float)grandeza(no->getEsq())/(float)grandeza(no)) >= Alpha ){
-					return no;
-				}
-			}
+
 			return NULL;
 		}
 
+		No_SG* removendoRec(int valor, No_SG* no){
+            No_SG* sg = NULL;
+            if(valor > no->getValor()){
+                if(no->getDir() != NULL) {
+                    if(no->getDir()->getValor() == valor) {
+                        // remove
+                    }
+                    else {
+                        sg = removendoRec(valor, no->getDir());
+                    }
+                }
+                else
+                    return NULL;
+            }
+            else if(valor < no->getValor()){
+                if(no->getEsq() != NULL) {
+                    if(no->getEsq()->getValor() == valor){
+                        // remove
+                    }
+                    else {
+                        sg = removendoRec(valor, no->getEsq());
+                    }
+                }
+                else
+                    return NULL;
+            }
+		}
 	protected:
 
 	public:
-		SG_Tree(double A = 2.0/3.0) {
+	    /// 0.66 ~ 2/3
+		SG_Tree(double A = 0.66) {
 			raiz = NULL;
 			Alpha = A;
 			qtde = 0;
@@ -308,11 +332,11 @@ class SG_Tree{
 			if (h == -1) return false;
 			return true;
 		}
-
 		*/
-		void inserir(int valor){
+		bool inserir(int valor){
 			h = 0;
 			No_SG* sg = NULL;
+			int tmp = qtde;
 			if (raiz == NULL){
                 raiz = new No_SG(valor);
 				qtde++;
@@ -321,17 +345,28 @@ class SG_Tree{
                 sg = inserindoRec(valor, raiz);
 			}
 			if (sg != NULL){
-				std::cout << valor << " Arvore Desbalanceada\n";
-				if (sg == raiz)
-                    reconstruirArvore(sg);
-                else
-                    reconstruirArvore(sg->getPai());
+				if (h > logH(qtde, Alpha)) {
+                    // std::cout << valor << " Arvore Desbalanceada\n";
+                    if (sg == raiz)
+                        reconstruirArvore(sg);
+                    else
+                        reconstruirArvore(sg->getPai());
+				}
 
 			}
+			if(qtde == tmp)
+                return false;
+            return true;
 		}
 
+		/*
 		void remover(int valor) {
 			raiz = removendo(valor, raiz);
+		}*/
+		bool remover(int valor){
+            if (raiz == NULL)
+                return false;
+            No_SG* sg = removendoRec(valor, raiz);
 		}
 
 		/*
