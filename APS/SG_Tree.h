@@ -10,6 +10,7 @@ class SG_Tree{
 		int qtde; // Quantidade de itens na arvore
         int h; // Parametro temporario global q armazena o valor da profundidade da arvore na hora da inserção recursiva
         int hMax;
+        bool sgb ;
 
 		double logbx(double base, double value){
 			return (log(value) / log(base));
@@ -61,11 +62,12 @@ class SG_Tree{
 		void VerificaDesbalanceio(int h, No_SG* inserido){
 			//std::cout << h << " > " << logH(qtde, Alpha) << std::endl;
 			if (h > logH(qtde, Alpha)) {
-				//std::cout << "Desbalanceada!!\n";
+				std::cout << "Desbalanceada!!\n";
+
 
 				// Buscar o scapeGoat
 				// while ( (3 * grandeza(inserido)) <= (2 * grandeza(inserido->getPai())) ){
-				while ( (grandeza(inserido)/grandeza(inserido->getPai())) >= Alpha ){
+				while ( ((float)grandeza(inserido)/(float)grandeza(inserido->getPai())) >= Alpha ){
 				//std::cout << "Se " <<(3 * grandeza(inserido)) << " <= " << (2 * grandeza(inserido->getPai())) << " SOBE " <<std::endl;
 					inserido = inserido->getPai();
 					//std::cout << "Se " <<(3 * grandeza(inserido)) << " <= " << (2 * grandeza(inserido->getPai())) << " SOBE " <<std::endl;
@@ -88,15 +90,6 @@ class SG_Tree{
 		void reconstruirArvore(No_SG *scapeGoat){
 			//std::cout << "Reconstruindo Arvore\n";
 			int tam_sg = grandeza(scapeGoat);
-			/* DEBUG
-			if (scapeGoat == NULL) {
-                std::cout << "SG null\n";
-			}
-			else
-                std::cout << scapeGoat->getValor() << std::endl;
-
-			std::cout << tam_sg << std::endl;
-			*/
 			No_SG *pai = scapeGoat->getPai();
 			No_SG **vetor = new No_SG* [tam_sg];
 			armazenarNoVetor(scapeGoat, vetor, 0);
@@ -249,32 +242,55 @@ class SG_Tree{
 		}
 
 		No_SG* inserindoRec(int valor, No_SG* no){
+
 			h++;
 			No_SG* sg = NULL;
 			if(no->getValor() > valor) {
 				if(no->getEsq() != NULL){
                     sg = inserindoRec(valor, no->getEsq());
-                    if(sg != NULL)
-                        return sg;
+                    if(sg){
+                        if(sg != NULL)
+                            return sg;
+                    }
 				}
 				else{
 					qtde++;
-					no->setEsq(new No_SG(valor));
-					no->getEsq()->setPai(no);
+					if(sgb){
+                        no->setEsq(new No_SG(valor));
+                        no->getEsq()->setPai(no);
+					}
+					else{
+                        No_SG* aux = new No_SG(valor);
+                        no->setEsq(aux);
+                        no->getEsq()->setPai(no);
+                        return aux;
+					}
 				}
 			}
 			else if(no->getValor() < valor){
 				if(no->getDir() != NULL){
 					sg = inserindoRec(valor, no->getDir()) ;
-					if(sg != NULL)
-                        return sg;
+					if(sgb){
+                        if(sg != NULL)
+                            return sg;
+					}
 				}
 				else{
 					qtde++;
-					no->setDir( new No_SG(valor));
-					no->getDir()->setPai(no);
+                    if(sgb){
+                        no->setDir(new No_SG(valor));
+                        no->getDir()->setPai(no);
+					}
+					else{
+                        No_SG* aux = new No_SG(valor);
+                        no->setDir(aux);
+                        no->getDir()->setPai(no);
+                        return aux;
+					}
+
 				}
 			}
+			if(sgb) {
 			if (h > logH(qtde, Alpha)) {
                 if(no->getDir() != NULL)
                     if( ((float)grandeza(no->getDir())/(float)grandeza(no)) >= Alpha )
@@ -283,6 +299,7 @@ class SG_Tree{
                 if(no->getEsq() != NULL)
                     if ( ((float)grandeza(no->getEsq())/(float)grandeza(no)) >= Alpha )
                         return no;
+			}
 			}
 
 			return NULL;
@@ -377,9 +394,10 @@ class SG_Tree{
 	    /// 0.66 ~ 2/3
 		SG_Tree(double A = 0.66) {
 			raiz = NULL;
-			Alpha = A;
+            setAlpha(A);
 			qtde = 0;
 			hMax = 0;
+			sgb = false;
 		}
 
 		~SG_Tree() {
@@ -394,7 +412,7 @@ class SG_Tree{
 		}
 		*/
 		bool inserir(int valor){
-			h = 1;
+			h = 0;
 			No_SG* sg = NULL;
 			int tmp = qtde;
 			if (raiz == NULL){
@@ -406,11 +424,22 @@ class SG_Tree{
 			}
 			if (sg != NULL){
                 //std::cout << valor << " Arvore Desbalanceada na insercao\n";
+                std::cout << "PreOrder:\n";
+                preOrder();
+                std::cout << std::endl ;
+                if(sgb){
                 if (sg == raiz)
                     reconstruirArvore(sg);
                 else
                     reconstruirArvore(sg->getPai());
-
+                }
+                else{
+                    // sg == inserido
+                    VerificaDesbalanceio(h-1, sg);
+                }
+                std::cout << "PreOrder:\n";
+                preOrder();
+                std::cout << std::endl << std::endl;
 			}
 			if (h < hMax)
                 hMax = h;
@@ -437,6 +466,7 @@ class SG_Tree{
 		}
 
 		/*
+		// Versão iterativa da função buscar
 		No_SG* buscar(int valor){
 			No_SG* aux = raiz;
 			do {
@@ -461,15 +491,19 @@ class SG_Tree{
 		No_SG* buscar(int valor){
             return buscando(valor, raiz);
 		}
-
+		void setAlpha(double A){
+		    // ScapeGoat Tree suporta Alpha entre 0.5 e 1
+            if(A > 1 || A < 0.5)
+                A = 0.66;
+			else
+                Alpha = A;
+        }
 		void preOrder(){
 			preOrder(raiz);
 		}
-
 		void posOrder(){
 			posOrder(raiz);
 		}
-
 		void inOrder(){
 			inOrder(raiz);
 		}
