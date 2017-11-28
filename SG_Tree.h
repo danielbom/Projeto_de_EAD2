@@ -197,6 +197,7 @@ class SG_Tree{
 			delete no ;
 		}
 
+		// Removendo simples que nem numa BFS
 		No_SG* removendo(int valor, No_SG* no){
 			if (no == NULL){
 				return NULL;
@@ -302,16 +303,16 @@ class SG_Tree{
 				}
 			}
 			if(no->getDir() != NULL){
-				std::cout << "dir nao null\n";
+				//std::cout << "dir nao null\n";
 				if( ((float)grandeza(no->getDir())/(float)grandeza(no)) >= Alpha ){
-					std::cout << "sg?\n";
+					//std::cout << "sg?\n";
 					return no;
 				}
 			}
 			if(no->getEsq() != NULL){
-				std::cout << "esq nao null\n";
+				//std::cout << "esq nao null\n";
 				if ( ((float)grandeza(no->getEsq())/(float)grandeza(no)) >= Alpha ){
-					std::cout << "sg?\n";
+					//std::cout << "sg?\n";
 					std::cout << no->getValor() << std::endl;
 					return no;
 				}
@@ -357,9 +358,6 @@ class SG_Tree{
 				std::cout << "Arvore Desbalanceada\n";
 			}
 		}
-
-
-
 
 		void remover(int valor) {
 			raiz = removendo(valor, raiz);

@@ -9,8 +9,17 @@ class SG_Tree{
 		double Alpha; // Parametro que verifica desbalanceamento
 		int qtde; // Quantidade de itens na arvore
         int h; // Parametro temporario global q armazena o valor da profundidade da arvore na hora da inserção recursiva
-        int hMax;
-        bool sgb ;
+        int hMax; // Parametro que guarda o maior h inserido para executar a remoção
+        // Se executar uma remoção e uma reordenação, hMax = log(qtde, Alpha)
+        bool sgb ; // Parametro temporario para testes
+        // Se true, durante a inserção busca o scapegoat, se necessário, realiza a reordenação com ele
+        // Caso contrário, executa inserção e depois busca o scapegoat durante a reordenação
+
+        // Verificou-se uma mudança na reordenação, para a alteração do parametro 'sgb'
+        // Para True, ele reordena melhor o lado esquerdo
+        // Para False, ele tem uma ordenação um pouco pior
+        // Imagino que seja pq a busca do 'scapegoat' p/ false, busca apenas pelos nós anteriores ao inserido
+        // ja p/ true, ele verifica os dois filhos do vertice.
 
 		double logbx(double base, double value){
 			return (log(value) / log(base));
@@ -393,7 +402,7 @@ class SG_Tree{
 	protected:
 
 	public:
-	    /// 0.66 ~ 2/3
+        /// 0.66 ~ 2/3
 		SG_Tree(double A = 0.66) {
 			raiz = NULL;
             setAlpha(A);
@@ -401,18 +410,13 @@ class SG_Tree{
 			hMax = 0;
 			sgb = true;
 		}
-
 		~SG_Tree() {
 			destruir(raiz);
 		}
-
-		/*
-		bool inserir(int valor) {
-			int h = inserindo(valor); // h recebe a altura da inserção de v
-			if (h == -1) return false;
-			return true;
+		// Versao recursiva da funcao busca...
+		No_SG* buscar(int valor){
+            return buscando(valor, raiz);
 		}
-		*/
 		bool inserir(int valor){
 			h = 0;
 			No_SG* sg = NULL;
@@ -443,17 +447,12 @@ class SG_Tree{
                 preOrder();
                 std::cout << std::endl << std::endl;
 			}
-			if (h < hMax)
+			if (h > hMax)
                 hMax = h;
 			if(qtde == tmp)
                 return false;
             return true;
 		}
-
-		/*
-		void remover(int valor) {
-			raiz = removendo(valor, raiz);
-		}*/
 		bool remover(int valor){
             if (raiz == NULL)
                 return false;
@@ -465,33 +464,6 @@ class SG_Tree{
                 else
                     reconstruirArvore(sg->getPai());
             }
-		}
-
-		/*
-		// Versão iterativa da função buscar
-		No_SG* buscar(int valor){
-			No_SG* aux = raiz;
-			do {
-				if (aux == NULL) {
-					return NULL;
-				}
-				else {
-					if (aux->getValor() < valor){
-						aux = aux->getDir();
-					}
-					else if (aux->getValor() > valor){
-						aux = aux->getEsq();
-					}
-					else {
-						return aux;
-					}
-				}
-			} while(true);
-		}
-		*/
-		// Versao recursiva da funcao busca...
-		No_SG* buscar(int valor){
-            return buscando(valor, raiz);
 		}
 		void setAlpha(double A){
 		    // ScapeGoat Tree suporta Alpha entre 0.5 e 1
