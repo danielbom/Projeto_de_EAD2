@@ -4,7 +4,7 @@
 using namespace std;
 
 int main () {
-  SG_Tree *sg = new SG_Tree(0.6);
+  SG_Tree *sg = new SG_Tree(0.5);
 
   /*sg->inserir(3);
   sg->inserir(2);

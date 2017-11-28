@@ -67,7 +67,7 @@ class SG_Tree{
 
 				// Buscar o scapeGoat
 				// while ( (3 * grandeza(inserido)) <= (2 * grandeza(inserido->getPai())) ){
-				while ( ((float)grandeza(inserido)/(float)grandeza(inserido->getPai())) >= Alpha ){
+				while ( ((float)grandeza(inserido)/(float)grandeza(inserido->getPai())) <= Alpha ){
 				//std::cout << "Se " <<(3 * grandeza(inserido)) << " <= " << (2 * grandeza(inserido->getPai())) << " SOBE " <<std::endl;
 					inserido = inserido->getPai();
 					//std::cout << "Se " <<(3 * grandeza(inserido)) << " <= " << (2 * grandeza(inserido->getPai())) << " SOBE " <<std::endl;
@@ -242,7 +242,6 @@ class SG_Tree{
 		}
 
 		No_SG* inserindoRec(int valor, No_SG* no){
-
 			h++;
 			No_SG* sg = NULL;
 			if(no->getValor() > valor) {
@@ -291,15 +290,18 @@ class SG_Tree{
 				}
 			}
 			if(sgb) {
-			if (h > logH(qtde, Alpha)) {
-                if(no->getDir() != NULL)
-                    if( ((float)grandeza(no->getDir())/(float)grandeza(no)) >= Alpha )
-                        return no;
+                if (h > logH(qtde, Alpha)) {
+                    if(no->getDir() != NULL)
+                        if (grandeza(no->getDir()) <= Alpha*grandeza(no))
+                            return no;
+                        //if( ((float)grandeza(no->getDir())/(float)grandeza(no)) >= Alpha )
 
-                if(no->getEsq() != NULL)
-                    if ( ((float)grandeza(no->getEsq())/(float)grandeza(no)) >= Alpha )
-                        return no;
-			}
+                    if(no->getEsq() != NULL)
+                        if (grandeza(no->getEsq()) <= Alpha*grandeza(no))
+                            return no;
+                        //if ( ((float)grandeza(no->getEsq())/(float)grandeza(no)) >= Alpha )
+
+                }
 			}
 
 			return NULL;
@@ -397,7 +399,7 @@ class SG_Tree{
             setAlpha(A);
 			qtde = 0;
 			hMax = 0;
-			sgb = false;
+			sgb = true;
 		}
 
 		~SG_Tree() {
@@ -435,7 +437,7 @@ class SG_Tree{
                 }
                 else{
                     // sg == inserido
-                    VerificaDesbalanceio(h-1, sg);
+                    VerificaDesbalanceio(h, sg);
                 }
                 std::cout << "PreOrder:\n";
                 preOrder();
