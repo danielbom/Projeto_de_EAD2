@@ -8,10 +8,9 @@ class SG_Tree{
 		No_SG *raiz;
 		double Alpha; // Parametro que verifica desbalanceamento
 		int qtde; // Quantidade de itens na arvore
-        int h; // Parametro temporario global q armazena o valor da profundidade da arvore na hora da inserção recursiva
         int hMax; // Parametro que guarda o maior h inserido para executar a remoção
         // Se executar uma remoção e uma reordenação, hMax = log(qtde, Alpha)
-        bool sgb ; // Parametro temporario para testes
+
         // Se true, durante a inserção busca o scapegoat, se necessário, realiza a reordenação com ele
         // Caso contrário, executa inserção e depois busca o scapegoat durante a reordenação
 
@@ -76,7 +75,7 @@ class SG_Tree{
 
 				// Buscar o scapeGoat
 				// while ( (3 * grandeza(inserido)) <= (2 * grandeza(inserido->getPai())) ){
-				while ( ((float)grandeza(inserido)/(float)grandeza(inserido->getPai())) <= Alpha ){
+				while ( grandeza(inserido) <= Alpha*grandeza(inserido->getPai()) ){
 				//std::cout << "Se " <<(3 * grandeza(inserido)) << " <= " << (2 * grandeza(inserido->getPai())) << " SOBE " <<std::endl;
 					inserido = inserido->getPai();
 					//std::cout << "Se " <<(3 * grandeza(inserido)) << " <= " << (2 * grandeza(inserido->getPai())) << " SOBE " <<std::endl;
@@ -159,14 +158,93 @@ class SG_Tree{
 				h++;
 			} while(!feito);
 
-			VerificaDesbalanceio(h, inserido);
+            VerificaDesbalanceio(h, inserido);
 
 			qtde++;
 			return h;
 		}
+        /* ******************************************************************** */
+		void removendo2(int v){
+            if (raiz == NULL){
+                return ;
+            }
+            No_SG* aux = raiz;
+            bool feito = false;
+
+            do {
+                if (v > aux->getValor()) {
+                    if(aux->getDir() != NULL) {
+                        if(aux->getDir()->getValor() == valor) {
+                            aux = aux->getDir();
+                            d = true;
+                        }
+                        else {
+                            aux = no->getDir();
+                        }
+                    }
+                    else{
+                        return ;
+                    }
+                }
+                else if (v < aux->getValor()) {
+                    if(aux->getEsq() != NULL) {
+                        if(aux->getEsq()->getValor() == valor) {
+                            aux = no->getEsq();
+                            e = true;
+                        }
+                        else {
+                            aux = no->getEsq();
+                        }
+                    }
+                    else{
+                        return ;
+                    }
+                }
+                else {
+                    if(aux->getDir() == NULL && aux->getEsq() == NULL) {
+                        if (e == true)
+                            no->setEsq(NULL);
+                        else if(d == true)
+                            no->setDir(NULL);
+                        feito = true;
+                    }
+                    else if (aux->getEsq() != NULL && aux->getDir() != NULL){
+                        No_SG* menorMaiores = aux->getDir();
+                        while(menorMaiores->getEsq() != NULL)
+                            menorMaiores = menorMaiores->getEsq();
+                        aux->setValor( menorMaiores->getValor() );
+                        valor = menorMaiores->getValor();
+                    }
+                    else {
+                        if(aux->getEsq() != NULL){
+                            if (e == true)
+                                no->setEsq(aux->getEsq());
+                            else if(d == true)
+                                no->setDir(aux->getEsq());
+                        }
+                        else{
+                            if (e == true)
+                                no->setEsq(aux->getDir());
+                            else if(d == true)
+                                no->setDir(aux->getDir());
+                        }
+                        feito = true;
+                    }
+                }
+            }(!feito);
+
+            if (aux != NULL){
+
+            }
+
+		}
+		/* *********************************************************** */
 
 		void preOrder(No_SG* no){
-			if (no == NULL) return ;
+			if (no == NULL) {
+                std::cout << "- ";
+                return ;
+			}
 			std::cout << no->getValor() << " " ;
 			preOrder(no->getEsq());
 			preOrder(no->getDir());
@@ -235,6 +313,7 @@ class SG_Tree{
 					}
 				}
 			}
+
 		}
 
 		No_SG* buscando(int valor, No_SG* no){
@@ -248,72 +327,6 @@ class SG_Tree{
                 else
                     return no;
             }
-		}
-
-		No_SG* inserindoRec(int valor, No_SG* no){
-			h++;
-			No_SG* sg = NULL;
-			if(no->getValor() > valor) {
-				if(no->getEsq() != NULL){
-                    sg = inserindoRec(valor, no->getEsq());
-                    if(sg){
-                        if(sg != NULL)
-                            return sg;
-                    }
-				}
-				else{
-					qtde++;
-					if(sgb){
-                        no->setEsq(new No_SG(valor));
-                        no->getEsq()->setPai(no);
-					}
-					else{
-                        No_SG* aux = new No_SG(valor);
-                        no->setEsq(aux);
-                        no->getEsq()->setPai(no);
-                        return aux;
-					}
-				}
-			}
-			else if(no->getValor() < valor){
-				if(no->getDir() != NULL){
-					sg = inserindoRec(valor, no->getDir()) ;
-					if(sgb){
-                        if(sg != NULL)
-                            return sg;
-					}
-				}
-				else{
-					qtde++;
-                    if(sgb){
-                        no->setDir(new No_SG(valor));
-                        no->getDir()->setPai(no);
-					}
-					else{
-                        No_SG* aux = new No_SG(valor);
-                        no->setDir(aux);
-                        no->getDir()->setPai(no);
-                        return aux;
-					}
-
-				}
-			}
-			if(sgb) {
-                if (h > logH(qtde, Alpha)) {
-                    if(no->getDir() != NULL)
-                        if (grandeza(no->getDir()) <= Alpha*grandeza(no))
-                            return no;
-                        //if( ((float)grandeza(no->getDir())/(float)grandeza(no)) >= Alpha )
-
-                    if(no->getEsq() != NULL)
-                        if (grandeza(no->getEsq()) <= Alpha*grandeza(no))
-                            return no;
-                        //if ( ((float)grandeza(no->getEsq())/(float)grandeza(no)) >= Alpha )
-
-                }
-			}
-
-			return NULL;
 		}
 
 		No_SG* removendoRec(int valor, No_SG* no){
@@ -351,6 +364,9 @@ class SG_Tree{
                 else
                     return NULL;
             }
+            else {
+                aux = no;
+            }
             // Removendo
             if(aux!=NULL){
                 if(aux->getDir() == NULL && aux->getEsq() == NULL) {
@@ -364,9 +380,9 @@ class SG_Tree{
                     No_SG* menorMaiores = aux->getDir();
                     while(menorMaiores->getEsq() != NULL)
                         menorMaiores = menorMaiores->getEsq();
-                    menorMaiores->setValor( aux->getValor() );
+                    aux->setValor( menorMaiores->getValor() );
 
-                    sg = removendoRec(aux->getValor(), no->getDir());
+
                     if(sg != NULL)
                         return sg;
                 }
@@ -389,11 +405,11 @@ class SG_Tree{
             }
             if (hMax > logH(qtde, Alpha)) {
                 if(no->getDir() != NULL)
-                    if( ((float)grandeza(no->getDir())/(float)grandeza(no)) >= Alpha )
+                    if( grandeza(no->getDir()) <= Alpha*grandeza(no) )
                         return no;
 
                 if(no->getEsq() != NULL)
-                    if ( ((float)grandeza(no->getEsq())/(float)grandeza(no)) >= Alpha )
+                    if ( grandeza(no->getEsq())<= Alpha*grandeza(no)  )
                         return no;
             }
 
@@ -408,7 +424,7 @@ class SG_Tree{
             setAlpha(A);
 			qtde = 0;
 			hMax = 0;
-			sgb = true;
+			sgb = false;
 		}
 		~SG_Tree() {
 			destruir(raiz);
@@ -417,45 +433,16 @@ class SG_Tree{
 		No_SG* buscar(int valor){
             return buscando(valor, raiz);
 		}
+
 		bool inserir(int valor){
-			h = 0;
-			No_SG* sg = NULL;
-			int tmp = qtde;
-			if (raiz == NULL){
-                raiz = new No_SG(valor);
-				qtde++;
-			}
-			else {
-                sg = inserindoRec(valor, raiz);
-			}
-			if (sg != NULL){
-                //std::cout << valor << " Arvore Desbalanceada na insercao\n";
-                std::cout << "PreOrder:\n";
-                preOrder();
-                std::cout << std::endl ;
-                if(sgb){
-                if (sg == raiz)
-                    reconstruirArvore(sg);
-                else
-                    reconstruirArvore(sg->getPai());
-                }
-                else{
-                    // sg == inserido
-                    VerificaDesbalanceio(h, sg);
-                }
-                std::cout << "PreOrder:\n";
-                preOrder();
-                std::cout << std::endl << std::endl;
-			}
-			if (h > hMax)
-                hMax = h;
-			if(qtde == tmp)
+            int h = inserindo(valor);
+            if(h == -1)
                 return false;
             return true;
 		}
-		bool remover(int valor){
+		void remover(int valor){
             if (raiz == NULL)
-                return false;
+                return ;
             No_SG* sg = removendoRec(valor, raiz);
             if(sg != NULL) {
                 //std::cout << valor << " Arvore Desbalanceada na delecao\n";
@@ -463,6 +450,9 @@ class SG_Tree{
                     reconstruirArvore(sg);
                 else
                     reconstruirArvore(sg->getPai());
+
+                hMax = logH(qtde, Alpha);
+                qtde--;
             }
 		}
 		void setAlpha(double A){
