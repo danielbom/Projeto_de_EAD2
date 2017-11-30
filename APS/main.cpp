@@ -20,24 +20,26 @@ int main () {
   // é a complexidade de espaco pra reordenação que, no pior caso(raro) é O(n), e no caso medio é O(lon n)
 
 
-  for(int i=0; i < 5; i++)
+  for(int i=0; i < 20; i++)
     sg->inserir(i);
 
+  if(false){
+    sg->remover(6);
+    sg->remover(1);
+    sg->remover(2);
+    sg->remover(4);
+  }
   cout << "InOrder:\n";
   sg->inOrder();
   cout << endl;
-  sg->remover(8);
 
   cout << "PosOrder:\n";
   sg->posOrder();
   cout << endl;
-  sg->remover(4);
 
   cout << "PreOrder:\n";
   sg->preOrder();
   cout << endl << endl;
-
-  cout << sg->buscar(0)->getValor() << endl;
 
   // 10 7 3 1 0 2 5 4 6 9 8 15 12 11 13 16 - sem nenhuma remocao
   // 7 3 1 0 2 6 5 12 10 9 11 15 13 16 - com remocao

@@ -6,9 +6,10 @@
 class SG_Tree{
 	private:
 		No_SG *raiz;
-		double Alpha; // Parametro que verifica desbalanceamento
-		int qtde; // Quantidade de itens na arvore
-        int hMax; // Parametro que guarda o maior h inserido para executar a remoção
+		double Alpha; /// Parametro que verifica desbalanceamento
+		int qtde; /// Quantidade de itens na arvore
+        int hMax; /// Parametro que guarda o maior h inserido para executar a remoção
+        No_SG* temp; /// Armazena o cara que recebeu o posto de hMax
         // Se executar uma remoção e uma reordenação, hMax = log(qtde, Alpha)
 
         // Se true, durante a inserção busca o scapegoat, se necessário, realiza a reordenação com ele
@@ -70,29 +71,29 @@ class SG_Tree{
 		void VerificaDesbalanceio(int h, No_SG* inserido){
 			//std::cout << h << " > " << logH(qtde, Alpha) << std::endl;
 			if (h > logH(qtde, Alpha)) {
-				std::cout << "Desbalanceada!!\n";
+                if(h > hMax){
+                    temp = inserido;
+                    hMax = h;
+                }
 
+                No_SG* aux = encontreScapeGoat(inserido);
+                for(int i = 0; i<qtde && aux->getPai() != NULL; i++){
+                    inserido = aux;
+                    aux = encontreScapeGoat(inserido->getPai());
+                }
 
-				// Buscar o scapeGoat
-				// while ( (3 * grandeza(inserido)) <= (2 * grandeza(inserido->getPai())) ){
-				while ( grandeza(inserido) <= Alpha*grandeza(inserido->getPai()) ){
-				//std::cout << "Se " <<(3 * grandeza(inserido)) << " <= " << (2 * grandeza(inserido->getPai())) << " SOBE " <<std::endl;
-					inserido = inserido->getPai();
-					//std::cout << "Se " <<(3 * grandeza(inserido)) << " <= " << (2 * grandeza(inserido->getPai())) << " SOBE " <<std::endl;
-				}
-
-				// Reconstruir a nova arvore em relação a nova raiz
-				// reconstruirArvore(inserido->getPai()); // ANTERIOR
-				// reconstruirArvore(inserido); // TESTE
-				// O problema nao era a funcao grandeza, mas sim neste ponto.
-				// Essa mudança tecnicamente concertou o erro.
-				// Antes se meu SG era a raiz ele enviava um pai NULL e nao executava
-				// Talvez um if, else??? pois o modelo do site geeksforgeeks manda o pai???
 				if (inserido == raiz)
 					reconstruirArvore(inserido);
 				else
 					reconstruirArvore(inserido->getPai());
 			}
+		}
+
+		No_SG* encontreScapeGoat(No_SG* no){
+            while ( grandeza(no) <= Alpha*grandeza(no->getPai()) ){
+                no = no->getPai();
+            }
+            return no;
 		}
 
 		void reconstruirArvore(No_SG *scapeGoat){
@@ -158,87 +159,11 @@ class SG_Tree{
 				h++;
 			} while(!feito);
 
-            VerificaDesbalanceio(h, inserido);
+            VerificaDesbalanceio(h+1, inserido);
 
 			qtde++;
 			return h;
 		}
-        /* ******************************************************************** */
-		void removendo2(int v){
-            if (raiz == NULL){
-                return ;
-            }
-            No_SG* aux = raiz;
-            bool feito = false;
-
-            do {
-                if (v > aux->getValor()) {
-                    if(aux->getDir() != NULL) {
-                        if(aux->getDir()->getValor() == valor) {
-                            aux = aux->getDir();
-                            d = true;
-                        }
-                        else {
-                            aux = no->getDir();
-                        }
-                    }
-                    else{
-                        return ;
-                    }
-                }
-                else if (v < aux->getValor()) {
-                    if(aux->getEsq() != NULL) {
-                        if(aux->getEsq()->getValor() == valor) {
-                            aux = no->getEsq();
-                            e = true;
-                        }
-                        else {
-                            aux = no->getEsq();
-                        }
-                    }
-                    else{
-                        return ;
-                    }
-                }
-                else {
-                    if(aux->getDir() == NULL && aux->getEsq() == NULL) {
-                        if (e == true)
-                            no->setEsq(NULL);
-                        else if(d == true)
-                            no->setDir(NULL);
-                        feito = true;
-                    }
-                    else if (aux->getEsq() != NULL && aux->getDir() != NULL){
-                        No_SG* menorMaiores = aux->getDir();
-                        while(menorMaiores->getEsq() != NULL)
-                            menorMaiores = menorMaiores->getEsq();
-                        aux->setValor( menorMaiores->getValor() );
-                        valor = menorMaiores->getValor();
-                    }
-                    else {
-                        if(aux->getEsq() != NULL){
-                            if (e == true)
-                                no->setEsq(aux->getEsq());
-                            else if(d == true)
-                                no->setDir(aux->getEsq());
-                        }
-                        else{
-                            if (e == true)
-                                no->setEsq(aux->getDir());
-                            else if(d == true)
-                                no->setDir(aux->getDir());
-                        }
-                        feito = true;
-                    }
-                }
-            }(!feito);
-
-            if (aux != NULL){
-
-            }
-
-		}
-		/* *********************************************************** */
 
 		void preOrder(No_SG* no){
 			if (no == NULL) {
@@ -329,92 +254,6 @@ class SG_Tree{
             }
 		}
 
-		No_SG* removendoRec(int valor, No_SG* no){
-            No_SG* aux = NULL;
-            No_SG* sg = NULL;
-            bool d, e;
-            d = e = false;
-            if(valor > no->getValor()){
-                if(no->getDir() != NULL) {
-                    if(no->getDir()->getValor() == valor) {
-                        aux = no->getDir();
-                        d = true;
-                    }
-                    else {
-                        sg = removendoRec(valor, no->getDir());
-                        if(sg != NULL)
-                            return sg;
-                    }
-                }
-                else
-                    return NULL;
-            }
-            else if(valor < no->getValor()){
-                if(no->getEsq() != NULL) {
-                    if(no->getEsq()->getValor() == valor){
-                        aux = no->getEsq();
-                        e = true;
-                    }
-                    else {
-                        sg = removendoRec(valor, no->getEsq());
-                        if(sg != NULL)
-                            return sg;
-                    }
-                }
-                else
-                    return NULL;
-            }
-            else {
-                aux = no;
-            }
-            // Removendo
-            if(aux!=NULL){
-                if(aux->getDir() == NULL && aux->getEsq() == NULL) {
-                    delete aux;
-                    if (e == true)
-                        no->setEsq(NULL);
-                    else if(d == true)
-                        no->setDir(NULL);
-                }
-                else if (aux->getEsq() != NULL && aux->getDir() != NULL){
-                    No_SG* menorMaiores = aux->getDir();
-                    while(menorMaiores->getEsq() != NULL)
-                        menorMaiores = menorMaiores->getEsq();
-                    aux->setValor( menorMaiores->getValor() );
-
-
-                    if(sg != NULL)
-                        return sg;
-                }
-                else {
-                    if(aux->getEsq() != NULL){
-                        if (e == true)
-                            no->setEsq(aux->getEsq());
-                        else if(d == true)
-                            no->setDir(aux->getEsq());
-                        delete aux;
-                    }
-                    else{
-                        if (e == true)
-                            no->setEsq(aux->getDir());
-                        else if(d == true)
-                            no->setDir(aux->getDir());
-                        delete aux;
-                    }
-                }
-            }
-            if (hMax > logH(qtde, Alpha)) {
-                if(no->getDir() != NULL)
-                    if( grandeza(no->getDir()) <= Alpha*grandeza(no) )
-                        return no;
-
-                if(no->getEsq() != NULL)
-                    if ( grandeza(no->getEsq())<= Alpha*grandeza(no)  )
-                        return no;
-            }
-
-            return NULL;
-		}
 	protected:
 
 	public:
@@ -424,7 +263,6 @@ class SG_Tree{
             setAlpha(A);
 			qtde = 0;
 			hMax = 0;
-			sgb = false;
 		}
 		~SG_Tree() {
 			destruir(raiz);
@@ -443,18 +281,18 @@ class SG_Tree{
 		void remover(int valor){
             if (raiz == NULL)
                 return ;
-            No_SG* sg = removendoRec(valor, raiz);
-            if(sg != NULL) {
-                //std::cout << valor << " Arvore Desbalanceada na delecao\n";
-                if (sg == raiz)
-                    reconstruirArvore(sg);
-                else
-                    reconstruirArvore(sg->getPai());
-
+            if (temp->getValor() == valor){
+                temp = temp->getPai();
+            }
+            raiz = removendo(valor, raiz);
+            if(temp != NULL){
+                VerificaDesbalanceio(hMax+1, temp);
                 hMax = logH(qtde, Alpha);
-                qtde--;
             }
 		}
+		double getAlpha(){
+            return Alpha;
+        }
 		void setAlpha(double A){
 		    // ScapeGoat Tree suporta Alpha entre 0.5 e 1
             if(A > 1 || A < 0.5)
