@@ -86,6 +86,8 @@ class SG_Tree{
 					reconstruirArvore(inserido);
 				else
 					reconstruirArvore(inserido->getPai());
+
+                hMax = logH(qtde, Alpha);
 			}
 		}
 
@@ -213,6 +215,7 @@ class SG_Tree{
 				}
 				else {
 					if (no->getEsq() == NULL && no->getDir() == NULL){
+                        qtde--;
 						delete no;
 						return NULL;
 					}
@@ -226,11 +229,13 @@ class SG_Tree{
 					}
 					else {
 						if (no->getEsq() != NULL){
+                            qtde--;
 							No_SG* aux = no->getEsq();
 							delete no;
 							return aux;
 						}
 						else {
+						    qtde--;
 							No_SG* aux = no->getDir();
 							delete no;
 							return aux;
@@ -287,7 +292,6 @@ class SG_Tree{
             raiz = removendo(valor, raiz);
             if(temp != NULL){
                 VerificaDesbalanceio(hMax+1, temp);
-                hMax = logH(qtde, Alpha);
             }
 		}
 		double getAlpha(){
