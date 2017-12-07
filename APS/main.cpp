@@ -1,52 +1,134 @@
 #include <iostream>
+#include <unistd.h>
 #include "SG_Tree.h"
 
 using namespace std;
 
-int main () {
-  SG_Tree *sg = new SG_Tree(0.5);
-  // O é um parametro de inicialização da arvore. Se não for especificado,
-  // seu valor padrão é de 0.6, pois detem um desbalanceio muito bom entre eficiencia e custo
-  // e é o mais comum nas implementações deste tipo de arvore.
+void imprimir(SG_Tree *sg){
+	cout<<"\nIn order:\n ";
+	sg->inOrder();
+	cout << endl;
 
-  // A ScapeGoat Tree suporta alpha entre [0.5 , 1], onde
-  // 1 é uma BST sem otimização nenhuma e
-  // 0.5 busca uma arvore binaria completa sempre
+	cout<<"\nPost order:\n ";
+	sg->posOrder();
+	cout << endl;
 
-  // Aos operações de inserção e remoção com reordenação para uma arvore semi-balanciada( ou alpha-balanceada )
-  // busca garantir uma operação de busca com complexidade de tempo O(log n)
+	cout<<"\nPre order:\n ";
+	sg->preOrder();
+	cout << endl;
+}
 
-  // ScapeGoat Tree é uma arvore tão eficiente quanto RB Tree, entre outras. Uma das poucas disvantagens
-  // é a complexidade de espaco pra reordenação que, no pior caso(raro) é O(n), e no caso medio é O(lon n)
+void menu(SG_Tree *sg){
+	system("clear");
+	cout << endl;
+	cout<<"Ãrvore ScapeGoat Teste"<<endl;
 
+	char ch;
+	int val;
 
-  for(int i=0; i < 20; i++)
-    sg->inserir(i);
+	do
+	{
+		cout<<"\nOperaÃ§Ãµes da Ã¡rvore\n";
+		cout<<"1. Inserir "<<endl;
+		cout<<"2. Contar NÃ³s"<<endl;
+		cout<<"3. Buscar"<<endl;
+		cout<<"4. Verificar status"<<endl;
+		cout<<"5. Tornar Ã¡rvore vazia"<<endl;
+		cout<<"6. Remover"<<endl;
+		cout<<"7. Sair"<<endl;
 
-  if(false){
-    sg->remover(6);
-    sg->remover(1);
-    sg->remover(2);
-    sg->remover(4);
-  }
-  cout << "InOrder:\n";
-  sg->inOrder();
-  cout << endl;
+		int choice;
 
-  cout << "PosOrder:\n";
-  sg->posOrder();
-  cout << endl;
+		cout<<"Escolha uma opÃ§Ã£o: ";
+		cin>>choice;
+		system("clear");
 
-  cout << "PreOrder:\n";
-  sg->preOrder();
-  cout << endl << endl;
+		switch (choice)
+		{
+			case 1:{
+				do {
+					cout<<"Entre com um inteiro para ser inserido: ";
+					cin>>val;
+					sg->inserir(val);
 
-  // 10 7 3 1 0 2 5 4 6 9 8 15 12 11 13 16 - sem nenhuma remocao
-  // 7 3 1 0 2 6 5 12 10 9 11 15 13 16 - com remocao
+					imprimir(sg);
+					cout<<"\nQuer continuar? (s ou n) \n";
+					cin>>ch;
+				} while(ch == 's' || ch == 'S');
+				break;
+			}
+			case 2:{
+				cout<< "Quantidade de NÃ³s = " << sg->getQuantidade() << endl;
+				break;
+			}
+			case 3:{
+				cout<<"Entre com um nÃºmero interiro para pesquisa: ";
+				cin>>val;
+				if (sg->buscar(val))
+					cout<<val<<" encontrado na Ã¡rvore"<<endl;
+				else
+					cout<<val<<" NÃ£o encontrado na Ã¡rvore"<<endl;
+				break;
+			}
+			case 4:{
+				cout<<"Status da Ã¡rvore = ";
+				if (sg->isEmpty())
+					cout<<"Ãrvore estÃ¡ vazia"<<endl;
+				else
+					cout<<"Ãrvore nÃ£o estÃ¡ vazia"<<endl;
+				menu(sg);
+				break;
+			}
+			case 5:{
+				cout<<"\nÃrvore limpa\n";
+				float aux = sg->getAlpha();
+				delete sg;
+				sg = new SG_Tree(aux);
+				break;
+			}
+			case 6:{
+				do {
+					cout<<"Entre com um inteiro para ser removido: ";
+					cin>>val;
+					cout << "Removendo... \n";
+					sg->remover(val);
 
-  // Podemos perceber que a arvore foi reconstruida na remocao
-  // Isso deixa a perceber que a arvore esta funcionando corretamente
+					imprimir(sg);
+					cout<<"\nQuer continuar? (s ou n) \n";
+					cin>>ch;
+				} while(ch == 's' || ch == 'S');
+				break;
+			}
+			case 7:{
+				cout << endl;
+				cout<<"\n DuckTales Uh-Uh !\n";
+				cout << endl;
+				exit(0);
+				break;
+			}
+			default:{
+				cout<<"Entrada invÃ¡lida!! \n ";
+				cout << endl;
+				menu(sg);
+				break;
+			}
+		}
 
-  delete sg;
-  return 0;
+		imprimir(sg);
+		cout << endl;
+	}
+	while (true);
+	exit(0);
+}
+
+int main() {
+	system("clear");
+	float Alpha;
+	cout << "Escolha o Alpha:" << endl;
+	cin >> Alpha;
+	SG_Tree *sg = new SG_Tree(Alpha);
+	menu(sg);
+
+	return 0;
+
 }
